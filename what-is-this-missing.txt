@@ -1,0 +1,12 @@
+
+
+eslint
+
+
+jest
+
+
+gh workflow 
+
+
+prettier w vscode extensions
