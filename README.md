@@ -16,6 +16,7 @@ npm i
 # are local to your machine
 DATABASE_USER='henryjacobs'
 DATABASE_PASSWORD='password'
+DATABASE_PORT=3306 # OR the port that your local mysql instance is bound to
 ```
 
 ```bash

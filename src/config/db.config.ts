@@ -1,5 +1,7 @@
 import { Sequelize } from 'sequelize';
 
+console.log(process.env.PORT)
+
 const sequelize = new Sequelize(
   'hello_world_db',
   process.env.DATABASE_USER as string,
@@ -7,6 +9,7 @@ const sequelize = new Sequelize(
   {
     dialect: 'mysql',
     host: 'localhost',
+    port: process.env.DATABASE_PORT as unknown as number, 
   },
 );
 
