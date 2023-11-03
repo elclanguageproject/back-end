@@ -10,7 +10,7 @@
     "debug": "npx nodemon --exec node --inspect -r ts-node/register ./src/app.ts",
     "clean": "rimraf dist",
     "prod": "npm run clean && tsc && node ./dist/app.js",
-    "lint": "eslint ./src/**.ts",
+    "lint": "eslint ./src/**/**.ts ./tests/**/**.test.ts",
     "make-pretty": "prettier --config .prettierrc ./src/**/**.ts ./tests/**/**.ts --write"
   },
   "repository": {
@@ -37,6 +37,8 @@
     "@typescript-eslint/parser": "^6.9.0",
     "dotenv": "^16.3.1",
     "eslint": "^8.52.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-prettier": "^5.0.1",
     "jest": "^29.7.0",
     "morgan": "^1.10.0",
     "nodemon": "^3.0.1",
