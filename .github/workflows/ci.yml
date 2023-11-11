@@ -113,7 +113,7 @@ jobs:
           RAILWAY_WEBHOOK_PROXY: ${{ secrets.RAILWAY_WEBHOOK_PROXY }}
         continue-on-error: false
 
-  end-to-end-testing:
+  back-end-e2e-testing:
     needs: deployment
     runs-on: ubuntu-latest
     steps:
@@ -138,7 +138,7 @@ jobs:
           DOTENV_KEY: ${{ secrets.DOTENV_KEY }}
 
   front-end-e2e-testing:
-    needs: end-to-end-testing
+    needs: back-end-e2e-testing
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code including Submodules
@@ -160,11 +160,10 @@ jobs:
 
       - name: 'Install Frontend Dependencies'
         run: |
-          cd ./.github/frontend  # Navigate to your frontend directory
+          cd ./.github/front-end  # Navigate to your frontend directory
           npm ci   # Install dependencies
-          npm install -g ts-node
 
       - name: Run tests (preferably e2e tests/integration)
         run: |
-          cd ./.github/frontend  # Navigate to your frontend directory
+          cd ./.github/front-end  # Navigate to your frontend directory
           npm run test
