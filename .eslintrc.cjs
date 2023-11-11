@@ -10,6 +10,7 @@ module.exports = {
   rules: {
     'no-console': 1,
     'prettier/prettier': 2, // Means error
+    'prefer-const': 0,
   },
   root: true,
 };

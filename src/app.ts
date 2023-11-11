@@ -8,7 +8,7 @@ const PORT = process.env.PORT || 3000;
 app.use(morgan('dev'));
 
 app.get('/', (req, res) => {
-  res.send('Hiya, how you doing?');
+  res.json({ active: true });
 });
 
 connectDB();

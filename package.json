@@ -5,11 +5,16 @@
   "main": "index.js",
   "type": "commonjs",
   "scripts": {
-    "test": "jest",
-    "dev": "npx nodemon ./src/app.ts",
-    "debug": "npx nodemon --exec node --inspect -r ts-node/register ./src/app.ts",
+    "test": "cross-env NODE_ENV=test jest",
+    "test:unit-testing-local": "cross-env NODE_ENV=test jest ./tests/unit-tests",
+    "test:unit-testing-ci": "cross-env NODE_ENV=ci jest ./tests/unit-tests",
+    "test:e2e-testing-local": "cross-env NODE_ENV=dev jest ./tests/e2e-tests",
+    "test:e2e-testing-ci": "cross-env NODE_ENV=ci jest ./tests/e2e-tests",
+    "dev": "cross-env NODE_ENV=dev npx nodemon ./src/app.ts",
+    "debug": "cross-env NODE_ENV=dev npx nodemon --exec node --inspect -r ts-node/register ./src/app.ts",
+    "ci": "npm run clean && tsc && cross-env NODE_ENV=ci node ./dist/app.js",
     "clean": "rimraf dist",
-    "prod": "npm run clean && tsc && node ./dist/app.js",
+    "prod": "npm run clean && tsc && cross-env NODE_ENV=prod node ./dist/app.js",
     "lint": "eslint ./src/**/**.ts ./tests/**/**.test.ts",
     "make-pretty": "prettier --config .prettierrc ./src/**/**.ts ./tests/**/**.ts --write"
   },
@@ -25,6 +30,7 @@
   },
   "homepage": "https://github.com/elclanguageproject/back-end#readme",
   "dependencies": {
+    "axios": "^1.6.1",
     "express": "^4.18.2",
     "mysql2": "^3.6.2",
     "sequelize": "^6.33.0"
@@ -35,6 +41,7 @@
     "@types/morgan": "^1.9.7",
     "@typescript-eslint/eslint-plugin": "^6.9.0",
     "@typescript-eslint/parser": "^6.9.0",
+    "cross-env": "^7.0.3",
     "dotenv": "^16.3.1",
     "eslint": "^8.52.0",
     "eslint-config-prettier": "^9.0.0",
