@@ -1,4 +1,5 @@
 import axios from 'axios';
+import '../../src/config/env.config';
 
 describe('E2E functionality working as expected', () => {
   it('Calls the root url for the server and json message', async () => {
