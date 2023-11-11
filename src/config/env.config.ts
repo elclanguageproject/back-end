@@ -5,5 +5,12 @@ import { join } from 'path';
 // .env will contain all other shared project variables like cloud
 // keys, Auth0 keys, etc.
 
-dotenv.config({ path: join(__dirname, '../../.env') });
-dotenv.config({ path: join(__dirname, '../../.env.local') });
+switch (process.env.NODE_ENV) {
+  case 'dev' || 'test':
+    dotenv.config({ path: join(__dirname, '../../.env') });
+    dotenv.config({ path: join(__dirname, '../../.env.local') });
+    break;
+  case 'ci' || 'prod':
+    dotenv.config();
+    break;
+}
