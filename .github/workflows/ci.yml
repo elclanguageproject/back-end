@@ -1,0 +1,170 @@
+name: poll-and-deploy
+
+# change this to pull request when finished editing
+on:
+  push:
+    branches: [main]
+
+jobs:
+  linter:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '20.9.0'
+          cache: 'npm'
+
+      - name: 'Install Necessary Dependencies'
+        run: npm ci
+
+      - name: 'Lint Code'
+        run: npm run lint
+    continue-on-error: true
+
+  unit-tests:
+    runs-on: 'ubuntu-latest'
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '20.9.0'
+          cache: 'npm'
+
+      - name: 'Install necessary dependencies'
+        run: npm ci
+
+      - name: 'Run unit tests'
+        run: npm run test:unit-testing-ci
+        env:
+          DOTENV_KEY: ${{ secrets.DOTENV_KEY }}
+
+  deployment:
+    runs-on: ubuntu-latest
+    outputs:
+      isDeployed: ${{ steps.polling.outputs.isDeployed }}
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '20.9.0'
+          cache: 'npm'
+
+      - name: Install Necessary Dependencies
+        run: |
+          npm i -g @railway/cli
+
+      - name: Deploy
+        run: RAILWAY_TOKEN=$RAILWAY_TOKEN railway up --service back-end
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+
+      # Poll the deployment status
+      - name: Poll Deployment Status
+        id: polling
+        run: |
+          max_attempts=30
+          attempt_counter=0
+
+          echo "Polling for deployment status"
+
+          while [[ $attempt_counter -lt $max_attempts ]]
+          do
+
+            response=$( curl -s -o - -w "%{http_code}" -H "Authorization: Bearer ${{ secrets.SECURE_PAYLOAD }}" "${{ secrets.RAILWAY_WEBHOOK_PROXY }}?name=${{ github.event.pusher.name }}"  )
+
+            # Separate the response body and the status code
+            http_code="${response:(-3)}"
+            response_body="${response:0:${#response}-3}"
+
+            if [[ $http_code != 200  ]]; then
+              echo $http_code
+            fi 
+
+            is_deployed=$(echo $response_body | jq -r '.isDeployed')
+
+            if [[ $is_deployed == 'DEPLOYING' ]]; then 
+                echo "DEPLOYING" 
+            fi 
+
+            if [[ $is_deployed == 'SUCCESS' ]] ; then 
+                echo "SUCCESS"
+                exit 0 
+            fi 
+
+            if [[ $is_deployed == 'FAILED' ]] ; then 
+                echo "FAILED" 
+                exit 1 
+            fi 
+
+            attempt_counter=$((attempt_counter + 1))
+            echo Poll Attempt $attempt_counter
+            echo Trying again in 10 seconds...
+            sleep 10
+          done
+
+          echo "Polling Timed Out"
+          exit 1
+
+        env:
+          RAILWAY_WEBHOOK_PROXY: ${{ secrets.RAILWAY_WEBHOOK_PROXY }}
+        continue-on-error: false
+
+  end-to-end-testing:
+    needs: deployment
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+      - name: Setup Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: '20.9.0'
+          cache: 'npm'
+
+      - name: 'Install necessary dependencies'
+        run: |
+          npm i -g ts-node 
+          npm ci
+
+      - name: 'Run database connection test'
+        run: |
+          npm run test:e2e-testing-ci
+        env:
+          DOTENV_KEY: ${{ secrets.DOTENV_KEY }}
+
+  front-end-e2e-testing:
+    needs: end-to-end-testing
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code including Submodules
+        uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
+          token: ${{ secrets.G_ACCESS }}
+
+      - name: Update Submodules to Latest Remote Commit
+        run: |
+          git submodule update --init --recursive
+          git submodule update --remote --recursive
+
+      - name: Setup Node
+        uses: actions/setup-node@v2
+        with:
+          node-version: '20.9.0'
+          cache: 'npm'
+
+      - name: 'Install Frontend Dependencies'
+        run: |
+          cd ./.github/frontend  # Navigate to your frontend directory
+          npm ci   # Install dependencies
+          npm install -g ts-node
+
+      - name: Run tests (preferably e2e tests/integration)
+        run: |
+          cd ./.github/frontend  # Navigate to your frontend directory
+          npm run test
