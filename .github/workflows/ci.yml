@@ -65,13 +65,9 @@ jobs:
       # Poll the deployment status
       - name: Poll Deployment Status
         id: polling
-        run: bash .github/scripts/try-bash.bash
-
-        env:
-          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-          SERVER_URL: ${{ secrets.SERVER_URL }}
-          AUTH_SECRET: ${{ secrets.AUTH_SECRET }}
-          NAME: ${{ github.event.sender.name }}
+        run: |
+          env AUTH_SECRET="${{ secrets.AUTH_SECRET }}" SERVER_URL="${{ secrets.SERVER_URL }}" RAILWAY_TOKEN="${{ secrets.RAILWAY_TOKEN }}" NAME="${{ github.event.sender.name }}" bash try-bash.bash
+          bash .github/scripts/try-bash.bash
         continue-on-error: false
 
   back-end-e2e-testing:
