@@ -66,8 +66,7 @@ jobs:
       - name: Poll Deployment Status
         id: polling
         run: |
-          env AUTH_SECRET="${{ secrets.AUTH_SECRET }}" SERVER_URL="${{ secrets.SERVER_URL }}" RAILWAY_TOKEN="${{ secrets.RAILWAY_TOKEN }}" NAME="${{ github.event.sender.name }}" bash try-bash.bash
-          bash .github/scripts/try-bash.bash
+          echo $(pwd)
         continue-on-error: false
 
   back-end-e2e-testing:
