@@ -43,6 +43,9 @@ jobs:
 
   deployment:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./.github/scripts
     outputs:
       isDeployed: ${{ steps.polling.outputs.isDeployed }}
     steps:
@@ -65,9 +68,12 @@ jobs:
       # Poll the deployment status
       - name: Poll Deployment Status
         id: polling
-        run: |
-          env AUTH_SECRET="${{ secrets.AUTH_SECRET }}" SERVER_URL="${{ secrets.SERVER_URL }}" RAILWAY_TOKEN="${{ secrets.RAILWAY_TOKEN }}" NAME="${{ github.event.sender.name }}" bash ./.github/scripts/try-bash.bash
-
+        run: ./try-bash.sh
+        env:
+          AUTH_SECRET: ${{ secrets.AUTH_SECRET }}
+          SERVER_URL: ${{ secrets.SERVER_URL }}
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+          NAME: ${{ github.event.sender.name }}
         continue-on-error: false
 
   back-end-e2e-testing:

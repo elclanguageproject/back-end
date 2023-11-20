@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash
 
 max_attempts=40
 attempt_counter=0
@@ -6,7 +6,9 @@ attempt_counter=0
 echo "Polling for deployment status"
 
 deploy() {
+    cd ../../
     RAILWAY_TOKEN=$RAILWAY_TOKEN railway up --service back-end 1> /dev/null
+    cd ./.github/scripts
 }
 
 deploy & 
