@@ -68,7 +68,12 @@ jobs:
       # Poll the deployment status
       - name: Poll Deployment Status
         id: polling
-        run: ./try-bash.sh
+        run: |
+          export AUTH_SECRET="${{ secrets.AUTH_SECRET }}"
+          export SERVER_URL="${{ secrets.SERVER_URL }}"
+          export RAILWAY_TOKEN="${{ secrets.RAILWAY_TOKEN }}"
+          export NAME="${{ github.event.sender.name }}"
+          ./try-bash.sh
         env:
           AUTH_SECRET: ${{ secrets.AUTH_SECRET }}
           SERVER_URL: ${{ secrets.SERVER_URL }}
