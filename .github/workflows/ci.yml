@@ -65,7 +65,7 @@ jobs:
       # Poll the deployment status
       - name: Poll Deployment Status
         id: polling
-        run: bash ../scripts/try-bash.bash
+        run: bash .github/scripts/try-bash.bash
 
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
