@@ -44,4 +44,6 @@ npm run debug       # Run node in the debugger via dev tools in your browser
 
 ##### Recommended Installations
 
+Changing to see if the CI will finally freaking work! 
+
 For Visual Studio Code users, it's recommended they install the prettier VSCode extension created by prettier.io (it should be the extension with millions of installations and should also be verified). This will allow prettier to make changes on file saves and on code pastes, saving you from having to run `npm run make-pretty` every time a change is made.
