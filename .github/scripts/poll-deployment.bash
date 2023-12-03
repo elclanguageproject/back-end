@@ -6,7 +6,7 @@ echo "Polling for deployment status"
 while [[ $attempt_counter -lt $max_attempts ]]
 do
 
-response=$( curl -s -o - -w "%{http_code}" -H "Authorization: Bearer ${{ secrets.SECURE_PAYLOAD }}" "${{ secrets.RAILWAY_WEBHOOK_PROXY }}?name=${{ github.event.pusher.name }}"  )
+response=$( curl -s -o -w "%{http_code}" -H "Authorization: Bearer ${{ secrets.SECURE_PAYLOAD }}" "${{ secrets.RAILWAY_WEBHOOK_PROXY }}?name=${{ github.event.pusher.name }}"  )
 
 # Separate the response body and the status code
 http_code="${response:(-3)}"
